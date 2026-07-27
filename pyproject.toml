@@ -1,0 +1,22 @@
+[project]
+name = "ebac-bookstore"
+version = "0.1.0"
+description = "BookStore API"
+authors = [
+    {name = "SrDev-Henrique",email = "halbuquerque2850@gmail.com"}
+]
+requires-python = ">=3.13"
+dependencies = [
+    "django (>=6.0.7,<7.0.0)"
+]
+
+[dependency-groups]
+dev = [
+    "pytest (>=9.1.1,<10.0.0)",
+    "factory-boy (>=3.3.3,<4.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
