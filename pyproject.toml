@@ -1,3 +1,6 @@
+[tool.poetry]
+package-mode = false
+
 [project]
 name = "ebac-bookstore"
 version = "0.1.0"
@@ -14,9 +17,26 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pytest (>=9.1.1,<10.0.0)",
-    "factory-boy (>=3.3.3,<4.0.0)"
+    "factory-boy (>=3.3.3,<4.0.0)",
+    "basedpyright (>=1.29.0,<2.0.0)"
 ]
 
+[tool.pyright]
+pythonVersion = "3.13"
+venvPath = "."
+venv = ".venv"
+include = ["."]
+exclude = ["**/__pycache__", "**/migrations"]
+
+[[tool.pyright.executionEnvironments]]
+root = "order/tests"
+extraPaths = ["."]
+reportIncompatibleVariableOverride = false
+
+[[tool.pyright.executionEnvironments]]
+root = "product/tests"
+extraPaths = ["."]
+reportIncompatibleVariableOverride = false
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
