@@ -16,7 +16,8 @@ class ProductViewSetTest(APITestCase):
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data['count'], 1)
+        self.assertEqual(len(response.data['results']), 1)
 
     def test_retrieve_product(self):
         response = self.client.get(f'{self.url}{self.product.pk}/')
