@@ -16,6 +16,7 @@ class UserFactory(factory.django.DjangoModelFactory[User]):
 class OrderFactory(factory.django.DjangoModelFactory[Order]):
     class Meta:
         model = Order
+        skip_postgeneration_save = True
 
     user = factory.SubFactory(UserFactory)
 

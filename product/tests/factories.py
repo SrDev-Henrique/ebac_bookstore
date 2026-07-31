@@ -16,6 +16,7 @@ class CategoryFactory(factory.django.DjangoModelFactory[Category]):
 class ProductFactory(factory.django.DjangoModelFactory[Product]):
     class Meta:
         model = Product
+        skip_postgeneration_save = True
 
     title = factory.Faker("word")
     description = factory.Faker("text", max_nb_chars=500)
