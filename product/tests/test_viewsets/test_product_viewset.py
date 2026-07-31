@@ -1,13 +1,28 @@
+# pyright: reportUnannotatedClassAttribute=false, reportUnknownMemberType=false, reportUninitializedInstanceVariable=false, reportAny=false
+
+from typing import override
+
+from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
+from order.factories import UserFactory
 from product.factories import CategoryFactory, ProductFactory
-from product.models import Product
+from product.models import Category, Product
 
 
 class ProductViewSetTest(APITestCase):
-    def setUp(self):
+    client: APIClient
+    user: User
+    categories: list[Category]
+    product: Product
+    url: str
+
+    @override
+    def setUp(self) -> None:
         self.client = APIClient()
+        self.user = UserFactory()
+        self.client.force_authenticate(user=self.user)
         self.categories = CategoryFactory.create_batch(2)
         self.product = ProductFactory(category=self.categories)
         self.url = '/bookstore/v1/products/'
@@ -81,4 +96,3 @@ class ProductViewSetTest(APITestCase):
         self.assertEqual(response.data['title'], 'Partially Updated Book')
         self.assertEqual(response.data['price'], 3000)
         self.assertEqual(len(response.data['category']), 2)
-

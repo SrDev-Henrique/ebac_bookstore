@@ -1,7 +1,10 @@
+# pyright: reportUnannotatedClassAttribute=false, reportPrivateImportUsage=false, reportUnknownMemberType=false
+
 import factory
 from django.contrib.auth.models import User
 
-from order.models import Order
+from order.models.order import Order
+from product.models.product import Product
 from product.tests.factories import ProductFactory
 
 
@@ -16,11 +19,16 @@ class UserFactory(factory.django.DjangoModelFactory[User]):
 class OrderFactory(factory.django.DjangoModelFactory[Order]):
     class Meta:
         model = Order
+        skip_postgeneration_save = True
 
     user = factory.SubFactory(UserFactory)
 
     @factory.post_generation
-    def product(self, create, extracted, **kwargs):
+    def product(
+        self,
+        create: bool,
+        extracted: list[Product] | None,
+    ) -> None:
         if not create:
             return
         if extracted:

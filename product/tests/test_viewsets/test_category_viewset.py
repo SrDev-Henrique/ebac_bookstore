@@ -1,13 +1,27 @@
+# pyright: reportUnannotatedClassAttribute=false, reportUnknownMemberType=false, reportUninitializedInstanceVariable=false, reportAny=false
+
+from typing import override
+
+from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
+from order.factories import UserFactory
 from product.factories import CategoryFactory
 from product.models import Category
 
 
 class CategoryViewSetTest(APITestCase):
-    def setUp(self):
+    client: APIClient
+    user: User
+    category: Category
+    url: str
+
+    @override
+    def setUp(self) -> None:
         self.client = APIClient()
+        self.user = UserFactory()
+        self.client.force_authenticate(user=self.user)
         self.category = CategoryFactory(title='books')
         self.url = '/bookstore/v1/categories/'
 
@@ -75,4 +89,3 @@ class CategoryViewSetTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['title'], 'Partially Updated')
         self.assertEqual(response.data['slug'], self.category.slug)
-
