@@ -11,7 +11,10 @@ authors = [
 requires-python = ">=3.13"
 dependencies = [
     "django (>=6.0.7,<7.0.0)",
-    "djangorestframework (>=3.17.1,<4.0.0)"
+    "djangorestframework (>=3.17.1,<4.0.0)",
+    "django-extensions (>=4.1,<5.0)",
+    "django-debug-toolbar (>=7.0.0,<8.0.0)",
+    "psycopg2-binary (>=2.9.12,<3.0.0)"
 ]
 
 [dependency-groups]
@@ -19,7 +22,9 @@ dev = [
     "pytest (>=9.1.1,<10.0.0)",
     "pytest-django (>=4.11.1,<5.0.0)",
     "factory-boy (>=3.3.3,<4.0.0)",
-    "basedpyright (>=1.29.0,<2.0.0)"
+    "basedpyright (>=1.29.0,<2.0.0)",
+    "django-stubs (>=6.0.7,<7.0.0)",
+    "djangorestframework-stubs (>=3.17.1,<4.0.0)"
 ]
 
 [tool.pytest.ini_options]
@@ -33,10 +38,20 @@ pythonVersion = "3.13"
 venvPath = "."
 venv = ".venv"
 include = ["."]
-exclude = ["**/__pycache__", "**/migrations"]
+exclude = ["**/__pycache__", "**/migrations", ".venv"]
+
+[[tool.pyright.executionEnvironments]]
+root = "order"
+extraPaths = ["."]
+reportIncompatibleVariableOverride = false
 
 [[tool.pyright.executionEnvironments]]
 root = "order/tests"
+extraPaths = ["."]
+reportIncompatibleVariableOverride = false
+
+[[tool.pyright.executionEnvironments]]
+root = "product"
 extraPaths = ["."]
 reportIncompatibleVariableOverride = false
 

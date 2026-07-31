@@ -4,8 +4,8 @@ import factory
 from django.contrib.auth.models import User
 
 from order.models.order import Order
+from product.factories import ProductFactory
 from product.models.product import Product
-from product.tests.factories import ProductFactory
 
 
 class UserFactory(factory.django.DjangoModelFactory[User]):
