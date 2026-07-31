@@ -30,7 +30,7 @@ pythonVersion = "3.13"
 venvPath = "."
 venv = ".venv"
 include = ["."]
-exclude = ["**/__pycache__", "**/migrations"]
+exclude = ["**/__pycache__", "**/migrations", ".venv"]
 
 [[tool.pyright.executionEnvironments]]
 root = "order"

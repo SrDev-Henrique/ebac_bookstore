@@ -1,7 +1,9 @@
+# pyright: reportUnknownMemberType=false
+
 from django.db import IntegrityError
 from django.test import TestCase
 
-from order.models import Order
+from order.models.order import Order
 from order.tests.factories import OrderFactory, UserFactory
 from product.tests.factories import ProductFactory
 
@@ -18,7 +20,7 @@ class OrderModelTest(TestCase):
 
     def test_order_requires_user(self):
         with self.assertRaises(IntegrityError):
-            Order.objects.create()
+            _ = Order.objects.create()
 
     def test_order_can_have_multiple_products(self):
         products = ProductFactory.create_batch(3)

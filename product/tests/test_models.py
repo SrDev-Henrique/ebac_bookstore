@@ -1,7 +1,6 @@
 from django.db import IntegrityError
 from django.test import TestCase
 
-from product.models import Category, Product
 from product.tests.factories import CategoryFactory, ProductFactory
 
 
