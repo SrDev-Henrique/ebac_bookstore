@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from order.serializers import OrderSerializer
-from order.tests.factories import OrderFactory
+from order.tests.factories import OrderFactory, UserFactory
 from product.tests.factories import CategoryFactory, ProductFactory
 
 
@@ -11,7 +11,7 @@ class OrderSerializerTest(TestCase):
 
         serializer = OrderSerializer(order)
 
-        expected_fields = {'product', 'total'}
+        expected_fields = {'product', 'total', 'user'}
 
         self.assertEqual(set(serializer.data.keys()), expected_fields)
 
@@ -53,26 +53,15 @@ class OrderSerializerTest(TestCase):
         serializer = OrderSerializer(data=data)
 
         self.assertFalse(serializer.is_valid())
-        self.assertIn('product', serializer.errors)
+        self.assertIn('products_id', serializer.errors)
 
     def test_serializer_accepts_valid_data(self):
+        user = UserFactory()
+        product = ProductFactory()
+
         data = {
-            'product': [
-                {
-                    'title': 'Django Book',
-                    'description': 'Learn Django',
-                    'price': 5000,
-                    'active': True,
-                    'category': [
-                        {
-                            'title': 'Technology',
-                            'slug': 'technology',
-                            'description': 'Tech books',
-                            'active': True,
-                        }
-                    ],
-                }
-            ],
+            'user': user.id,
+            'products_id': [product.id],
         }
 
         serializer = OrderSerializer(data=data)

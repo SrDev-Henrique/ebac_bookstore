@@ -77,19 +77,14 @@ class CategorySerializerTest(TestCase):
 
 class ProductSerializerTest(TestCase):
     def test_serializer_accepts_valid_data(self):
+        category = CategoryFactory()
+
         data = {
             'title': 'Django Book',
             'description': 'Learn Django',
             'price': 5000,
             'active': True,
-            'category': [
-                {
-                    'title': 'Technology',
-                    'slug': 'technology',
-                    'description': 'Tech books',
-                    'active': True,
-                }
-            ],
+            'categories_id': [category.id],
         }
 
         serializer = ProductSerializer(data=data)
@@ -97,18 +92,13 @@ class ProductSerializerTest(TestCase):
         self.assertTrue(serializer.is_valid(), serializer.errors)
 
     def test_serializer_requires_title(self):
+        category = CategoryFactory()
+
         data = {
             'description': 'Learn Django',
             'price': 5000,
             'active': True,
-            'category': [
-                {
-                    'title': 'Technology',
-                    'slug': 'technology',
-                    'description': 'Tech books',
-                    'active': True,
-                }
-            ],
+            'categories_id': [category.id],
         }
 
         serializer = ProductSerializer(data=data)
@@ -127,22 +117,22 @@ class ProductSerializerTest(TestCase):
         serializer = ProductSerializer(data=data)
 
         self.assertFalse(serializer.is_valid())
-        self.assertIn('category', serializer.errors)
+        self.assertIn('categories_id', serializer.errors)
 
     def test_serializer_creates_product(self):
+        category = CategoryFactory(
+            title='Programming',
+            slug='programming',
+            description='Programming books',
+            active=True,
+        )
+
         data = {
             'title': 'Python Book',
             'description': 'Learn Python',
             'price': 3000,
             'active': True,
-            'category': [
-                {
-                    'title': 'Programming',
-                    'slug': 'programming',
-                    'description': 'Programming books',
-                    'active': True,
-                }
-            ],
+            'categories_id': [category.id],
         }
 
         serializer = ProductSerializer(data=data)
