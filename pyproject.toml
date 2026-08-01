@@ -33,6 +33,7 @@ DJANGO_SETTINGS_MODULE = "bookstore.settings"
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*", "*Test", "*Tests", "*Suite"]
 python_functions = ["test_*"]
+
 [tool.pyright]
 pythonVersion = "3.13"
 venvPath = "."
