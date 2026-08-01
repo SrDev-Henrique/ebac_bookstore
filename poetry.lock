@@ -454,4 +454,4 @@ markers = {main = "sys_platform == \"win32\"", dev = "sys_platform == \"win32\" 
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13"
-content-hash = "3d0e43e82189c265b30cc7a2bc1e36b8338129dbbc9b0c56d4225583a1185a9c"
+content-hash = "ed97f8108e31588cfe08b46873631aecd65a74912a98d31dcf743fdf90ec3a6b"
