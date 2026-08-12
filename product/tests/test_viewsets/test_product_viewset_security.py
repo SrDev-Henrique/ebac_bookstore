@@ -48,22 +48,22 @@ class ProductViewSetSecurityTest(APITestCase):
             (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN),
         )
 
-    # --- authentication is required on every action ---
+    # --- anonymous access is allowed on every action ---
 
-    def test_list_requires_authentication(self):
+    def test_list_allows_anonymous(self):
         response = self.client.get(self.url)
 
-        self.assertDenied(response)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_retrieve_requires_authentication(self):
+    def test_retrieve_allows_anonymous(self):
         response = self.client.get(self._detail_url())
 
-        self.assertDenied(response)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_create_requires_authentication(self):
+    def test_create_allows_anonymous(self):
         payload = {
             'title': 'Anonymous Book',
-            'description': 'Should not be created',
+            'description': 'Should be created',
             'price': 100,
             'active': True,
             'categories_id': [category.pk for category in self.categories],
@@ -71,25 +71,25 @@ class ProductViewSetSecurityTest(APITestCase):
 
         response = self.client.post(self.url, payload, format='json')
 
-        self.assertDenied(response)
-        self.assertFalse(Product.objects.filter(title='Anonymous Book').exists())
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(Product.objects.filter(title='Anonymous Book').exists())
 
-    def test_update_requires_authentication(self):
+    def test_update_allows_anonymous(self):
         response = self.client.patch(
-            self._detail_url(), {'title': 'Hacked'}, format='json'
+            self._detail_url(), {'title': 'Updated Anon'}, format='json'
         )
 
-        self.assertDenied(response)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.product.refresh_from_db()
-        self.assertNotEqual(self.product.title, 'Hacked')
+        self.assertEqual(self.product.title, 'Updated Anon')
 
-    def test_delete_requires_authentication(self):
+    def test_delete_allows_anonymous(self):
         response = self.client.delete(self._detail_url())
 
-        self.assertDenied(response)
-        self.assertTrue(Product.objects.filter(pk=self.product.pk).exists())
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Product.objects.filter(pk=self.product.pk).exists())
 
-    # --- token authentication ---
+    # --- token authentication (optional; invalid credentials still fail) ---
 
     def test_valid_token_grants_access(self):
         token = Token.objects.create(user=self.user)
@@ -106,12 +106,12 @@ class ProductViewSetSecurityTest(APITestCase):
 
         self.assertDenied(response)
 
-    def test_malformed_authorization_header_is_rejected(self):
+    def test_unrecognized_auth_scheme_falls_back_to_anonymous(self):
         self.client.credentials(HTTP_AUTHORIZATION='Bearer not-a-drf-scheme')
 
         response = self.client.get(self.url)
 
-        self.assertDenied(response)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_token_of_deleted_user_is_rejected(self):
         token = Token.objects.create(user=self.user)
@@ -159,18 +159,12 @@ class ProductViewSetSecurityTest(APITestCase):
     # --- injection / payload handling ---
 
     def test_sql_injection_in_query_string_is_not_executed(self):
-        token = Token.objects.create(user=self.user)
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {token.key}')
-
         response = self.client.get(f"{self.url}?search=1');DROP TABLE product_product;--")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue(Product.objects.filter(pk=self.product.pk).exists())
 
     def test_sql_injection_in_detail_lookup_is_not_executed(self):
-        token = Token.objects.create(user=self.user)
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {token.key}')
-
         response = self.client.get(f"{self.url}1 OR 1=1/")
 
         self.assertIn(
@@ -180,8 +174,6 @@ class ProductViewSetSecurityTest(APITestCase):
         self.assertTrue(Product.objects.filter(pk=self.product.pk).exists())
 
     def test_script_payload_is_stored_verbatim_and_served_as_json(self):
-        token = Token.objects.create(user=self.user)
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {token.key}')
         payload = {
             'title': '<script>alert(1)</script>',
             'description': 'xss attempt',
@@ -199,9 +191,6 @@ class ProductViewSetSecurityTest(APITestCase):
         self.assertNotIn('text/html', response['Content-Type'])
 
     def test_read_only_fields_cannot_be_overridden(self):
-        token = Token.objects.create(user=self.user)
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {token.key}')
-
         response = self.client.patch(
             self._detail_url(), {'id': 9999}, format='json'
         )

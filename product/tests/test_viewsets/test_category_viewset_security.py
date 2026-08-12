@@ -3,7 +3,6 @@
 from typing import override
 
 from rest_framework import status
-from rest_framework.response import Response
 from rest_framework.test import APIClient, APITestCase
 
 from product.factories import CategoryFactory
@@ -24,48 +23,42 @@ class CategoryViewSetSecurityTest(APITestCase):
     def _detail_url(self) -> str:
         return f'{self.url}{self.category.pk}/'
 
-    def assertDenied(self, response: Response) -> None:
-        self.assertIn(
-            response.status_code,
-            (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN),
-        )
-
-    def test_list_requires_authentication(self):
+    def test_list_allows_anonymous(self):
         response = self.client.get(self.url)
 
-        self.assertDenied(response)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_retrieve_requires_authentication(self):
+    def test_retrieve_allows_anonymous(self):
         response = self.client.get(self._detail_url())
 
-        self.assertDenied(response)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_create_requires_authentication(self):
+    def test_create_allows_anonymous(self):
         payload = {
             'title': 'Anonymous Category',
             'slug': 'anonymous-category',
-            'description': 'Should not be created',
+            'description': 'Should be created',
             'active': True,
         }
 
         response = self.client.post(self.url, payload, format='json')
 
-        self.assertDenied(response)
-        self.assertFalse(
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(
             Category.objects.filter(title='Anonymous Category').exists()
         )
 
-    def test_update_requires_authentication(self):
+    def test_update_allows_anonymous(self):
         response = self.client.patch(
-            self._detail_url(), {'title': 'Hacked'}, format='json'
+            self._detail_url(), {'title': 'Updated Anon'}, format='json'
         )
 
-        self.assertDenied(response)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.category.refresh_from_db()
-        self.assertNotEqual(self.category.title, 'Hacked')
+        self.assertEqual(self.category.title, 'Updated Anon')
 
-    def test_delete_requires_authentication(self):
+    def test_delete_allows_anonymous(self):
         response = self.client.delete(self._detail_url())
 
-        self.assertDenied(response)
-        self.assertTrue(Category.objects.filter(pk=self.category.pk).exists())
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Category.objects.filter(pk=self.category.pk).exists())
