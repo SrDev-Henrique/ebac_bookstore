@@ -103,10 +103,11 @@ Todas as rotas da API ficam sob `/bookstore/<versão>/`, onde `<versão>` é `v1
 | Categorias | `/bookstore/v1/categories/` |
 | Produtos | `/bookstore/v1/products/` |
 | Pedidos | `/bookstore/v1/orders/` |
+| Cadastro de usuário | `/bookstore/v1/users/` (`POST`) |
 | Admin | `/admin/` |
 | Autenticação por token | `/api-token-auth/` |
 
-Todas as rotas de recursos são públicas (`AllowAny`) — não exigem autenticação. Basic, Session e Token continuam disponíveis se você quiser usá-los; `/api-token-auth/` ainda gera token a partir de usuário e senha.
+Todas as rotas de recursos são públicas (`AllowAny`) — não exigem autenticação. O cadastro de usuário aceita `username`, `email` e `password` via `POST` e não lista usuários (`GET` retorna 405). Basic, Session e Token continuam disponíveis se você quiser usá-los; `/api-token-auth/` ainda gera token a partir de usuário e senha.
 
 ## Testes
 
