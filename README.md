@@ -106,7 +106,7 @@ Todas as rotas da API ficam sob `/bookstore/<versão>/`, onde `<versão>` é `v1
 | Admin | `/admin/` |
 | Autenticação por token | `/api-token-auth/` |
 
-Todas as rotas de recursos exigem autenticação (Basic, Session ou Token). Use `/api-token-auth/` para obter um token a partir de usuário e senha.
+Todas as rotas de recursos são públicas (`AllowAny`) — não exigem autenticação. Basic, Session e Token continuam disponíveis se você quiser usá-los; `/api-token-auth/` ainda gera token a partir de usuário e senha.
 
 ## Testes
 

@@ -56,6 +56,11 @@ class SecuritySettingsTest(SimpleTestCase):
         self.assertIn('DEFAULT_PAGINATION_CLASS', settings.REST_FRAMEWORK)
         self.assertLessEqual(settings.REST_FRAMEWORK['PAGE_SIZE'], 100)
 
+    def test_default_permission_allows_anonymous(self):
+        configured = settings.REST_FRAMEWORK['DEFAULT_PERMISSION_CLASSES']
+
+        self.assertIn('rest_framework.permissions.AllowAny', configured)
+
 
 class CsrfProtectionTest(APITestCase):
     client: APIClient
