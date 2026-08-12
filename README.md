@@ -32,10 +32,30 @@ As variáveis usadas são:
 | `SECRET_KEY` | Chave secreta do Django | chave de desenvolvimento embutida |
 | `DEBUG` | Ativa modo debug (`1`/`0`) | `1` |
 | `DJANGO_ALLOWED_HOSTS` | Hosts permitidos, separados por espaço | `localhost 127.0.0.1` |
+| `CSRF_TRUSTED_ORIGINS` | Origens HTTPS confiáveis (ex.: `https://seu-app.onrender.com`) | vazio |
 | `SQL_ENGINE` | Backend do banco | `django.db.backends.sqlite3` |
 | `SQL_DATABASE`, `SQL_USER`, `SQL_PASSWORD`, `SQL_HOST`, `SQL_PORT` | Credenciais do Postgres (usadas via Docker) | — |
 
 Sem essas variáveis definidas, o projeto roda normalmente com SQLite.
+
+## Deploy no Render
+
+1. Crie um **PostgreSQL** e um **Web Service** (Python 3) no mesmo region.
+2. Configure o serviço com:
+   - **Build Command:** `./build.sh`
+   - **Start Command:** `gunicorn bookstore.wsgi:application`
+3. Defina as variáveis de ambiente no Web Service:
+
+| Variável | Valor |
+|---|---|
+| `SECRET_KEY` | Generate no painel do Render |
+| `DEBUG` | `0` |
+| `DJANGO_ALLOWED_HOSTS` | `seu-app.onrender.com` |
+| `CSRF_TRUSTED_ORIGINS` | `https://seu-app.onrender.com` |
+| `SQL_ENGINE` | `django.db.backends.postgresql` |
+| `SQL_DATABASE` / `SQL_USER` / `SQL_PASSWORD` / `SQL_HOST` / `SQL_PORT` | Dados do Postgres no Render (use o host **Internal**) |
+
+O arquivo [`.python-version`](.python-version) fixa Python 3.13. O [`build.sh`](build.sh) instala as dependências com Poetry, roda `collectstatic` e aplica as migrations.
 
 ## Rodando com Docker (recomendado)
 

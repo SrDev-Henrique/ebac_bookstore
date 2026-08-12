@@ -31,6 +31,12 @@ ALLOWED_HOSTS = os.environ.get(
     'localhost 127.0.0.1 sr-dev-ebac-bookstore-api-1cf9a4c357b7.herokuapp.com',
 ).split()
 
+CSRF_TRUSTED_ORIGINS = [
+    origin
+    for origin in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split()
+    if origin
+]
+
 
 # Application definition
 
